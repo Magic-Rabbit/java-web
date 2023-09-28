@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        .indent {
+            margin-left: 30px;
+            margin-right: 30px;
+            margin-top: 20px;
+        }
+    </style>
+    <title>Информация о маршруте</title>
+</head>
+
+<body>
+<div th:replace="general :: page-header"> </div>
+
+<div class="indent">
+    <div id="routeInfo">
+        <h4 th:text="'Маршрут номер ' + ${route.getId()}"></h4>
+        <p th:text="'Место отправления: ' + ${route.getDeparture().getWaypoint_name()}"></p>
+        <p th:text="'Время отправления: ' + ${route.getDeparture_date()}"></p>
+        <p th:text="'Место прибытия: ' + ${route.getArrival().getWaypoint_name()}"></p>
+        <p th:text="'Время прибытия: ' + ${route.getArrival_date()}"></p>
+        <a th:href="'/company?id=' + ${route.getBus().getCompany().getId()}">
+            <p th:text="'Компания перевозчик: ' + ${route.getBus().getCompany().getCompany_name()}">
+
+            </p>
+        </a>
+
+        <p th:text="'Автобус: ' + ${route.getBus().getModel()}"></p>
+
+        <th:block th:with="tickets=${ticketService.getAvailableTickets(route)}">
+            <p> Список доступных билетов:&nbsp <span th:if="${tickets == null}">нет</span>
+                <table th:unless="${tickets} == null" class="table table-bordered table-warning">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col"> Номер сиденья </th>
+                        <th scope="col"> Цена </th>
+                        <th scope="col"> Статус </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="ticket : ${tickets}">
+                        <td>
+                            <a>
+                                <span th:text="${ticket.getSeat_number()}"> </span>
+                            </a>
+                        </td>
+                        <td>
+                            <a>
+                                <span th:text="${ticket.getPrice()}"> </span>
+                            </a>
+                        </td>
+                        <td>
+                            <a id="buyLink" th:href="'/buy?id=' + ${ticket.getId()}">
+                                <span> Купить </span>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </p>
+        </th:block >
+
+    </div>
+
+<!--    edit delete order button group-->
+    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-group mr-2" role="group" aria-label="First group">
+            <form style="margin-right: 30px" method="get" action="/editRoute">
+                <input type="hidden" name="id" th:value="${route.getId()}"/>
+                <button id="editButton" type="submit" class="btn btn-secondary">Редактировать информацию о маршруте</button>
+            </form>
+            <form method="post" action="/removeRoute">
+                <input type="hidden" name="id" th:value="${route.getId()}"/>
+                <button id="deleteButton" type="submit" class="btn btn-secondary">Удалить маршрут из базы</button>
+            </form>
+        </div>
+    </div>
+<!--    end of button group-->
+
+</div>
+
+<div th:replace="general :: site-footer"></div>
+<div th:replace="general :: site-script"></div>
+
+</body>
+</html>

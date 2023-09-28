@@ -1,0 +1,242 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RouteController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">cmc.webprak.controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: RouteController (cmc.webprak.controllers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RouteController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    12.5%
+  </span>
+  <span class="absValue">
+    (1/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    11.3%
+  </span>
+  <span class="absValue">
+    (6/53)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package cmc.webprak.controllers;
+&nbsp;
+&nbsp;import cmc.webprak.dao.*;
+&nbsp;import cmc.webprak.dao.impl.*;
+&nbsp;import cmc.webprak.tables.Clients;
+&nbsp;import cmc.webprak.tables.Routes;
+&nbsp;import cmc.webprak.tables.Tickets;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Controller;
+&nbsp;import org.springframework.ui.Model;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestParam;
+&nbsp;
+&nbsp;import java.sql.Timestamp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Controller
+<b class="fc">&nbsp;public class RouteController {</b>
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;    @Autowired</b>
+&nbsp;    private final RouteDAO routeDAO = new RouteDAOImpl();
+&nbsp;
+<b class="fc">&nbsp;    @Autowired</b>
+&nbsp;    private final TicketDAO ticketDAO = new TicketDAOImpl();
+&nbsp;
+<b class="fc">&nbsp;    @Autowired</b>
+&nbsp;    private final WaypointDAO waypointDAO = new WaypointDAOImpl();
+&nbsp;
+<b class="fc">&nbsp;    @Autowired</b>
+&nbsp;    private final BusDAO busesDAO = new BusDAOImpl();
+&nbsp;
+<b class="fc">&nbsp;    @Autowired</b>
+&nbsp;    private final ClientDAO clientDAO = new ClientDAOImpl();
+&nbsp;
+&nbsp;    @PostMapping(&quot;/saveRoute&quot;)
+&nbsp;    public String saveRoutePage(@RequestParam(name = &quot;routeId&quot;) String id,
+&nbsp;                                @RequestParam(name = &quot;departure&quot;) String departure,
+&nbsp;                                @RequestParam(name = &quot;departureDate&quot;) String departureDate,
+&nbsp;                                @RequestParam(name = &quot;arrival&quot;) String arrival,
+&nbsp;                                @RequestParam(name = &quot;arrivalDate&quot;) String arrivalDate,
+&nbsp;                                @RequestParam(name = &quot;busId&quot;) String busId,
+&nbsp;                                Model model) {
+<b class="nc">&nbsp;        Routes route = routeDAO.getById(Long.valueOf(id));</b>
+&nbsp;
+<b class="nc">&nbsp;        if (route != null) {</b>
+<b class="nc">&nbsp;            route.setDeparture(waypointDAO.getWaypointByName(departure));</b>
+<b class="nc">&nbsp;            route.setDeparture_date(Timestamp.valueOf(departureDate));</b>
+<b class="nc">&nbsp;            route.setArrival(waypointDAO.getWaypointByName(arrival));</b>
+<b class="nc">&nbsp;            route.setArrival_date(Timestamp.valueOf(arrivalDate));</b>
+<b class="nc">&nbsp;            route.setBus(busesDAO.getById(Long.valueOf(busId)));</b>
+<b class="nc">&nbsp;            routeDAO.update(route);</b>
+<b class="nc">&nbsp;            return &quot;redirect:/routes&quot;;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        model.addAttribute(&quot;error_msg&quot;, &quot;Data not saved&quot;);</b>
+<b class="nc">&nbsp;        return &quot;errorPage&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/editRoute&quot;)
+&nbsp;    public String editRoutePage(@RequestParam(name = &quot;id&quot;, required = false) Long id, Model model) {
+<b class="nc">&nbsp;        if (id == null) {</b>
+<b class="nc">&nbsp;            model.addAttribute(&quot;route&quot;, new Routes());</b>
+&nbsp;            //model.addAttribute(&quot;lecturerService&quot;, lecturerDAO);
+<b class="nc">&nbsp;            return &quot;editRoute&quot;;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Routes route = routeDAO.getById(id);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (route == null) {</b>
+<b class="nc">&nbsp;            model.addAttribute(&quot;error_msg&quot;, &quot;There is no route with this id =&quot; + id);</b>
+<b class="nc">&nbsp;            return &quot;errorPage&quot;;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        model.addAttribute(&quot;route&quot;, route);</b>
+&nbsp;        //model.addAttribute(&quot;lecturerService&quot;, lecturerDAO);
+<b class="nc">&nbsp;        return &quot;editRoute&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/route&quot;)
+&nbsp;    public String routePage(@RequestParam(name = &quot;id&quot;) Long id, Model model) {
+<b class="nc">&nbsp;        Routes route = routeDAO.getById(id);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (route == null) {</b>
+<b class="nc">&nbsp;            model.addAttribute(&quot;error_msg&quot;, &quot;В базе нет маршрута с ID = &quot; + id);</b>
+<b class="nc">&nbsp;            return &quot;errorPage&quot;;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        model.addAttribute(&quot;route&quot;, route);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;ticketService&quot;, ticketDAO);</b>
+<b class="nc">&nbsp;        return &quot;route&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/routes&quot;)
+&nbsp;    public String routeListPage(Model model) {
+<b class="nc">&nbsp;        model.addAttribute(&quot;routeService&quot;, routeDAO);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;ticketService&quot;, ticketDAO);</b>
+<b class="nc">&nbsp;        return &quot;routes&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/buy&quot;)
+&nbsp;    public String buyPage(@RequestParam(name = &quot;id&quot;) Long id, Model model) {
+<b class="nc">&nbsp;        model.addAttribute(&quot;ticket&quot;, ticketDAO.getById(id));</b>
+<b class="nc">&nbsp;        return &quot;buy&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/buy&quot;)
+&nbsp;    public String buyPostPage(@RequestParam(name = &quot;ticketId&quot;) Long id,
+&nbsp;                              @RequestParam(name = &quot;clientFullname&quot;) String fullname,
+&nbsp;                              @RequestParam(name = &quot;clientPhone&quot;) String phone,
+&nbsp;                              @RequestParam(name = &quot;clientEmail&quot;) String email,
+&nbsp;                              Model model) {
+<b class="nc">&nbsp;        Clients client = clientDAO.searchClientByEmail(email);</b>
+<b class="nc">&nbsp;        if (client == null)</b>
+<b class="nc">&nbsp;            client = clientDAO.searchClientByPhone(phone);</b>
+<b class="nc">&nbsp;        if (client == null)</b>
+<b class="nc">&nbsp;            client = clientDAO.searchClientByFullname(fullname);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (client == null) {</b>
+<b class="nc">&nbsp;            client = new Clients(fullname, phone, email);</b>
+<b class="nc">&nbsp;            clientDAO.update(client);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Tickets ticket = ticketDAO.getById(id);</b>
+<b class="nc">&nbsp;        ticket.status = &quot;SOLD&quot;;</b>
+<b class="nc">&nbsp;        ticket.client = client;</b>
+<b class="nc">&nbsp;        ticketDAO.update(ticket);</b>
+<b class="nc">&nbsp;        return &quot;redirect:/route?id=&quot; + ticket.route.getId().toString();</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/removeRoute&quot;)
+&nbsp;    public String removeRoutePage(@RequestParam(name = &quot;id&quot;) Long id) {
+<b class="nc">&nbsp;        routeDAO.deleteById(id);</b>
+<b class="nc">&nbsp;        return &quot;redirect:/routes&quot;;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-09-28 23:25</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        .indent {
+            margin-left: 30px;
+            margin-right: 30px;
+            margin-top: 20px;
+        }
+    </style>
+    <title>Информация о компании</title>
+</head>
+
+<body>
+<div th:replace="general :: page-header"> </div>
+
+<div class="indent">
+    <div id="companyInfo">
+        <h4 th:text="'Компания ' + ${company.getCompany_name()}"></h4>
+        <p th:text="'Дата добавления в систему: ' + ${company.getCreation_date()}"></p>
+
+        <th:block th:with="buses=${busService.getBusesByCompany(company)}">
+            <p> Список автобусов, принадлежащих компании:&nbsp <span th:if="${buses == null}">нет</span>
+                <table th:unless="${buses} == null" class="table table-bordered table-warning">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col"> Модель </th>
+                        <th scope="col"> Год выпуска </th>
+                        <th scope="col"> Количество мест </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="bus : ${buses}">
+                        <td>
+                            <a>
+                                <span th:text="${bus.getModel()}"> </span>
+                            </a>
+                        </td>
+                        <td>
+                            <a>
+                                <span th:text="${bus.getYear()}"> </span>
+                            </a>
+                        </td>
+                        <td>
+                            <a>
+                                <span th:text="${bus.getSeats_count()}"> </span>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </p>
+        </th:block >
+
+    </div>
+
+<!--    edit delete order button group-->
+    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-group mr-2" role="group" aria-label="First group">
+            <form style="margin-right: 30px" method="get" action="/editCompany">
+                <input type="hidden" name="id" th:value="${company.getId()}"/>
+                <button id="editButton" type="submit" class="btn btn-secondary">Редактировать информацию о компании</button>
+            </form>
+            <form method="post" action="/removeCompany">
+                <input type="hidden" name="id" th:value="${company.getId()}"/>
+                <button id="deleteButton" type="submit" class="btn btn-secondary">Удалить компанию из базы</button>
+            </form>
+        </div>
+    </div>
+<!--    end of button group-->
+
+</div>
+
+<div th:replace="general :: site-footer"></div>
+<div th:replace="general :: site-script"></div>
+
+</body>
+</html>
