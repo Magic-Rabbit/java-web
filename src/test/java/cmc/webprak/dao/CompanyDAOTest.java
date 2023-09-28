@@ -59,9 +59,9 @@ public class CompanyDAOTest {
     void testDeleteById() {
         Company deleteCompany = CompanyDAO.getById(1L);
         assertNotNull(deleteCompany);
-        ClientDAO.deleteById(1L);
+        CompanyDAO.deleteById(1L);
 
-        Clients client = ClientDAO.getById(1L);
+        Company client = CompanyDAO.getById(1L);
         assertNull(client);
     }
 
